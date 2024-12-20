@@ -6,10 +6,10 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text>This app includes example code to help you get.</Text>
-      <Link href="/profile" style={styles.link}>
+      <Link href="/home" style={styles.link}>
         <Text>Go to profile</Text>
       </Link>
-      <Text className='text-red-500 text-xl'>This app includes example code to help you get started.</Text>
+      <Text className='text-red-500 text-xl font-pblack'>This app includes example code to help you get started.</Text>
     </View>
   );
 }
