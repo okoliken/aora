@@ -2,39 +2,7 @@ import { View, Text, Image, type ImageSourcePropType } from "react-native";
 import { Tabs, Redirect } from "expo-router";
 import { icons } from "@/constants";
 
-const TabIcon = ({
-  icon,
-  color,
-  name,
-  focused,
-}: {
-  icon: ImageSourcePropType | undefined;
-  color: string;
-  name: string;
-  focused: boolean;
-}) => {
-  return (
-    <View className="flex items-center justify-center gap-1 min-w-[64px]">
-      <Image
-        source={icon}
-        resizeMode="contain"
-        tintColor={color}
-        className="w-5 h-5"
-      />
-      <Text
-        numberOfLines={1}
-        className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
-        style={{
-          color: color,
-          width: "auto",
-          flexShrink: 0,
-        }}
-      >
-        {name}
-      </Text>
-    </View>
-  );
-};
+
 
 const TabsLayout = () => {
   return (
@@ -122,3 +90,38 @@ const TabsLayout = () => {
 };
 
 export default TabsLayout;
+
+
+const TabIcon = ({
+  icon,
+  color,
+  name,
+  focused,
+}: {
+  icon: ImageSourcePropType | undefined;
+  color: string;
+  name: string;
+  focused: boolean;
+}) => {
+  return (
+    <View className="flex items-center justify-center gap-1 min-w-[64px]">
+      <Image
+        source={icon}
+        resizeMode="contain"
+        tintColor={color}
+        className="w-5 h-5"
+      />
+      <Text
+        numberOfLines={1}
+        className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
+        style={{
+          color: color,
+          width: "auto",
+          flexShrink: 0,
+        }}
+      >
+        {name}
+      </Text>
+    </View>
+  );
+};
