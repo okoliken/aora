@@ -1,10 +1,11 @@
 import { Text, View, ScrollView, Image } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import Button from "@/components/ui/Button";
 import { images } from "@/constants";
 import FormField from "@/components/ui/FormField";
+import { ScreenLayout } from "@/components/layouts/ScreenLayout";
 
 export default function SignIn() {
   const [form, setForm] = React.useState({
@@ -13,13 +14,13 @@ export default function SignIn() {
   });
 
   const handleSignIn = () => {
+    router.push('/home')
     console.log(form)
   };
 
   return (
-    <SafeAreaView className="bg-primary h-full">
-      <ScrollView>
-        <View className="w-full min-h-[85vh] justify-center gap-y-[2.5rem] py-6 px-4">
+    <ScreenLayout>
+      <View className="w-full min-h-[85vh] justify-center gap-y-[2.5rem] py-6 px-4">
           <Image
             source={images.logo}
             className="w-[115px] h-[35px]"
@@ -77,7 +78,6 @@ export default function SignIn() {
             </View>
           </View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+     </ScreenLayout>
   );
 }

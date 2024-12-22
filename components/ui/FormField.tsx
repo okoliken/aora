@@ -45,6 +45,7 @@ export default function FormField({
           placeholderTextColor="#7B7B8B"
           keyboardType={keyboardType}
           cursorColor={"#FF9C01"}
+          selectionColor={"#FF9C01"}
           secureTextEntry={title === "Password" ? !showPassword : false}
         />  
         {title === "Password" && (

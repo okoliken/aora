@@ -1,10 +1,13 @@
 import { Text, View } from 'react-native'
+import {  ScreenLayout } from '@/components/layouts/ScreenLayout'
 import React from 'react'
 
 export default function Home() {
   return (
-    <View>
-      <Text>Home</Text>
-    </View>
+    <ScreenLayout>
+      <View>
+          <Text>Home</Text>
+        </View>
+    </ScreenLayout> 
   )
 }
