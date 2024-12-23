@@ -5,6 +5,8 @@ import {
   TextInput,
   KeyboardTypeOptions,
   TouchableOpacity,
+  NativeSyntheticEvent,
+  TextInputFocusEventData,
 } from "react-native";
 import { icons } from "@/constants";
 import React from "react";
@@ -13,24 +15,28 @@ import React from "react";
 export default function FormField({
   title,
   value,
-  handleFieldChange,
+  onBlur,
   customStyles,
   keyboardType,
   secureTextEntry,
   placeholder,
+  onChangeText,
+  errorMessage
 }: {
   title: string;
   value: string;
-  handleFieldChange: (e: string) => void;
+  onChangeText: (text: string) => void;
+  onBlur?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
   customStyles?: string;
   keyboardType?: KeyboardTypeOptions | undefined;
   secureTextEntry?: boolean;
   placeholder?: string;
+  errorMessage?: string
 }) {
   const [showPassword, setShowPassword] = React.useState(false);
 
   return (
-    <View className={`gap-y-2 ${customStyles}`}>
+    <View className={`flex flex-col gap-y-2 relative ${customStyles}`}>
       <Text className="text-base text-gray-100 font-pmedium">{title}</Text>
       <View className="w-full h-16 bg-black-100 rounded-lg flex-row items-center">
         <TextInput
@@ -41,7 +47,8 @@ export default function FormField({
           autoCorrect={false}
           autoComplete="off"
           autoFocus={false}
-          onChangeText={handleFieldChange}
+          onChangeText={onChangeText}
+          onBlur={onBlur}
           placeholderTextColor="#7B7B8B"
           keyboardType={keyboardType}
           cursorColor={"#FF9C01"}
@@ -61,7 +68,9 @@ export default function FormField({
             />
           </TouchableOpacity>
         )}
+
       </View>
+        <Text className="text-xs text-red-600 font-pmedium absolute top-0 right-0">{errorMessage}</Text>
     </View>
   );
 }

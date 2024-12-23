@@ -36,21 +36,21 @@ export default function SignUp() {
               title="Username"
               placeholder="Enter your username"
               value={form.username}
-              handleFieldChange={() => {}}
+              onChangeText={() => {}}
             />
             <FormField
               title="Email"
               placeholder="Enter your email"
               keyboardType="email-address"
               value={form.email}
-              handleFieldChange={() => {}}
+              onChangeText={() => {}}
             />
             <FormField
               title="Password"
               value={form.passWord}
               placeholder="Enter your password"
               secureTextEntry
-              handleFieldChange={() => {}}
+              onChangeText={() => {}}
             />
           </View>
         </View>
