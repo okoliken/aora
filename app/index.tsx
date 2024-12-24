@@ -45,7 +45,7 @@ export default function HomeScreen() {
             Exploration with Aora
           </Text>
           <Button
-            containerStyles="mt-7"
+            containerStyles="mt-7 w-full"
             title="Continue with Email"
             handlePress={() => router.push('/sign-in')}
           />

@@ -7,7 +7,9 @@ import { useForm, Controller } from "react-hook-form";
 import FormField from "@/components/ui/FormField";
 import { ScreenLayout } from "@/components/layouts/ScreenLayout";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signIn } from '@/lib/appwrite'
 import * as z from "zod";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function SignIn() {
   const formSchema: z.ZodType<{ email: string; password: string }> = z.object({
@@ -16,6 +18,21 @@ export default function SignIn() {
       .string()
       .min(8, { message: "Must be 8 or more characters long" }),
   });
+
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
+
+  React.useEffect(() => {
+    let timerId: NodeJS.Timeout;
+    if (errorMessage) {
+      timerId = setTimeout(() => {
+        setErrorMessage("");
+      }, 4000);
+    }
+    return () => {
+      if (timerId) clearTimeout(timerId);
+    };
+  }, [errorMessage]);
 
   const {
     control,
@@ -30,12 +47,35 @@ export default function SignIn() {
     },
   });
 
-  const handleSignIn = (data: { email: string; password: string }) => {
-    console.log(data);
-    reset({
-      email: "",
-      password: "",
-    });
+  const handleSignIn = async (data: { email: string; password: string }) => {
+    setErrorMessage("");
+    setIsSubmitting(true);
+    try {
+      await signIn(data.email, data.password);
+      router.replace("/home");
+      reset();
+    } catch (error) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "An unexpected error occurred during sign in";
+      
+      const friendlyErrorMessage = (() => {
+        if (errorMessage.includes("Invalid credentials")) {
+          return "The email or password you entered is incorrect. Please try again.";
+        }
+        if (errorMessage.includes("user not found")) {
+          return "No account found with this email. Please sign up or check your email.";
+        }
+        if (errorMessage.includes("network")) {
+          return "Connection error. Please check your internet and try again.";
+        }
+        return errorMessage;
+      })();
+      
+      setErrorMessage(friendlyErrorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -50,6 +90,20 @@ export default function SignIn() {
           <Text className="text-3xl text-white font-semibold text-left font-psemibold tracking-[-1px]">
             Log in to Area
           </Text>
+
+          {errorMessage && (
+            <View className="bg-red-100 border border-red-400 rounded-md px-3 py-1 mb-4 flex-row items-center">
+              <Ionicons 
+                name="warning" 
+                size={20} 
+                color="#DC2626" 
+                className="mr-3" 
+              />
+              <Text className="text-red-700 flex-1 font-pregular text-sm">
+                {errorMessage}
+              </Text>
+            </View>
+          )}
 
           <View className="mt-8 gap-y-[1.375rem]">
             <Controller
@@ -92,6 +146,7 @@ export default function SignIn() {
                 title="Sign in"
                 containerStyles="mt-8 w-full"
                 handlePress={handleSubmit(handleSignIn)}
+                isLoading={isSubmitting}
               />
             </View>
 

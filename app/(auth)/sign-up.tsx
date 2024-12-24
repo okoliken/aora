@@ -3,18 +3,84 @@ import { images } from "@/constants";
 import React from "react";
 import FormField from "@/components/ui/FormField";
 import Button from "@/components/ui/Button";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { ScreenLayout } from "@/components/layouts/ScreenLayout";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { createUser } from "@/lib/appwrite";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function SignUp() {
-  const [form, setForm] = React.useState({
-    email: "",
-    passWord: "",
-    username: "",
+  const formSchema: z.ZodType<{ username: string; email: string; password: string }> = z.object({
+    username: z
+      .string()
+      .min(2, { message: "Username must be at least 2 characters" })
+      .max(50, { message: "Username must be less than 50 characters" }),
+    email: z.string().email({ message: "Invalid email address" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be 8 or more characters long" }),
   });
 
-  const handleSignUp = () => {
-    console.log(form);
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
+
+  React.useEffect(() => {
+    let timerId: NodeJS.Timeout;
+    if (errorMessage) {
+      timerId = setTimeout(() => {
+        setErrorMessage("");
+      }, 6000);
+    }
+    return () => {
+      if (timerId) clearTimeout(timerId);
+    };
+  }, [errorMessage]);
+
+  const handleSignUp = async (data: { username: string; email: string; password: string }) => {
+    setErrorMessage("");
+    setIsSubmitting(true);
+    try {
+      await createUser(data.email, data.password, data.username);
+      router.replace("/home");
+      reset();
+    } catch (error) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "An unexpected error occurred during sign up";
+      
+      const friendlyErrorMessage = (() => {
+        if (errorMessage.includes("Invalid document structure")) {
+          return "We're having trouble creating your profile. Please check your information and try again.";
+        }
+        if (errorMessage.includes("Missing required attribute")) {
+          return "Some required information is missing. Please fill out all fields completely.";
+        }
+        if (errorMessage.includes("email")) {
+          return "The email you entered appears to be invalid. Please check and try again.";
+        }
+        return errorMessage;
+      })();
+      
+      setErrorMessage(friendlyErrorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -31,34 +97,73 @@ export default function SignUp() {
             Create Account
           </Text>
 
+          {errorMessage && (
+            <View className="bg-red-100 border border-red-400 rounded-md p-3 mb-4 flex-row items-center">
+              <Ionicons 
+                name="warning" 
+                size={20} 
+                color="#DC2626" 
+                className="mr-3" 
+              />
+              <Text className="text-red-700 flex-1 font-pregular text-sm">
+                {errorMessage}
+              </Text>
+            </View>
+          )}
+
           <View className="mt-8 gap-y-[1.375rem]">
-            <FormField
-              title="Username"
-              placeholder="Enter your username"
-              value={form.username}
-              onChangeText={() => {}}
+            <Controller
+              name="username"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <FormField
+                  title="Username"
+                  placeholder="Enter your username"
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  errorMessage={errors.username?.message}
+                />
+              )}
             />
-            <FormField
-              title="Email"
-              placeholder="Enter your email"
-              keyboardType="email-address"
-              value={form.email}
-              onChangeText={() => {}}
+            <Controller
+              name="email"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <FormField
+                  title="Email"
+                  placeholder="Enter your email"
+                  keyboardType="email-address"
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  errorMessage={errors.email?.message}
+                />
+              )}
             />
-            <FormField
-              title="Password"
-              value={form.passWord}
-              placeholder="Enter your password"
-              secureTextEntry
-              onChangeText={() => {}}
+            <Controller
+              name="password"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <FormField
+                  title="Password"
+                  value={value}
+                  placeholder="Enter your password"
+                  secureTextEntry
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  errorMessage={errors.password?.message}
+                />
+              )}
             />
           </View>
         </View>
-        <View className="flex items-end flex-col">
+        <View className="w-full">
           <Button
             title="Sign up"
             containerStyles="w-full"
-            handlePress={() => handleSignUp()}
+            handlePress={handleSubmit(handleSignUp)}
+            isLoading={isSubmitting}
           />
         </View>
 
