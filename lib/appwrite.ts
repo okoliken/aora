@@ -94,13 +94,16 @@ export async function getAccount() {
 export async function getCurrentUser() {
   try {
     const currentAccount = await getAccount();
+    // console.log(currentAccount, "from here");
     if (!currentAccount) throw Error;
 
     const currentUser = await databases.listDocuments(
       config.databaseId,
       config.userCollectionId,
-      [Query.equal("account_id", currentAccount.$id)]
+      [Query.equal("AccountId", currentAccount.$id)]
     );
+
+    console.log(currentUser, "from here 2");
 
     if (!currentUser) throw Error;
 

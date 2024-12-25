@@ -3,6 +3,7 @@ import { useFonts } from "expo-font";
 import "../global.css";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import GlobalProvider from "@/context/GlobalProvider";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,7 +29,7 @@ export default function RootLayout() {
     return null;
   }
   return (
-    <>
+    <GlobalProvider>
       <Stack screenOptions={{ headerStyle: { backgroundColor: "#f4f4f4" } }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
@@ -36,6 +37,6 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar backgroundColor="#161622" style="light" />
-    </>
+    </GlobalProvider>
   );
 }
