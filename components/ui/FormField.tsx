@@ -18,7 +18,6 @@ export default function FormField({
   onBlur,
   customStyles,
   keyboardType,
-  secureTextEntry,
   placeholder,
   onChangeText,
   errorMessage
@@ -29,7 +28,6 @@ export default function FormField({
   onBlur?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
   customStyles?: string;
   keyboardType?: KeyboardTypeOptions | undefined;
-  secureTextEntry?: boolean;
   placeholder?: string;
   errorMessage?: string
 }) {
