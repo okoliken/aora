@@ -1,30 +1,36 @@
-import { Text, View, FlatList, Image, RefreshControl } from "react-native";
+import {
+  Text,
+  View,
+  FlatList,
+  Image,
+  RefreshControl,
+  Alert,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React from "react";
+import React, { useEffect } from "react";
 import { images } from "@/constants";
 import SearchInput from "@/components/ui/SearchInput";
 import Trending from "@/components/Trending";
 import EmptyState from "@/components/EmptyState";
-
+import useFetchPost from "../../hooks/useFetchPost";
+import { getAllPosts } from "../../lib/appwrite";
+import VideoCard from "@/components/ui/VideoCard";
 export default function Home() {
   const [refreshing, setRefreshing] = React.useState(false);
+  const { data, loading, refetch } = useFetchPost({ fetchPosts: getAllPosts });
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
+    await refetch();
+    setRefreshing(false);
   }, []);
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <FlatList
-        data={[
-          {
-            id: 1,
-          }
-        ]}
-        renderItem={({ item }) => <Text className="text-white">{item.id}</Text>}
-        keyExtractor={(item) => item.id.toString()}
+        data={data}
+        renderItem={({ item }) => <VideoCard video={item} />}
+        keyExtractor={(item) => item.$id}
         ListHeaderComponent={() => (
           <View className="my-6 px-6 gap-y-5">
             <View className="flex-row items-center justify-between h-[3.25rem]">
@@ -66,7 +72,11 @@ export default function Home() {
           />
         )}
         refreshControl={
-          <RefreshControl tintColor="#fff" refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            tintColor="#fff"
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
         }
       />
     </SafeAreaView>

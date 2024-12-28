@@ -7,6 +7,7 @@ import {
   Storage,
   Avatars,
   ImageGravity,
+  Models,
 } from "react-native-appwrite";
 
 export const config = {
@@ -29,6 +30,20 @@ const account = new Account(client);
 const databases = new Databases(client);
 const storage = new Storage(client);
 const avatars = new Avatars(client);
+
+
+export interface Post extends Models.Document {
+  $id: string;
+  Title: string;
+  Video: string;
+  Prompt: string;
+  Thumbnail: string;
+  users:{
+    Email: string;
+    Username: string;
+    Avatar: string;
+  }
+}
 
 // Register user
 export async function createUser(
@@ -103,13 +118,10 @@ export async function getCurrentUser() {
       [Query.equal("AccountId", currentAccount.$id)]
     );
 
-    console.log(currentUser, "from here 2");
-
     if (!currentUser) throw Error;
 
     return currentUser.documents[0];
   } catch (error) {
-    console.log(error);
     return null;
   }
 }
@@ -213,14 +225,14 @@ export async function createVideoPost(form: {
 }
 
 // Get all video Posts
-export async function getAllPosts() {
+export async function getAllPosts(): Promise<Post[]> {
   try {
     const posts = await databases.listDocuments(
       config.databaseId,
       config.videoCollectionId
     );
 
-    return posts.documents;
+    return posts.documents as Post[];
   } catch (error) {
     throw error as Error;
   }

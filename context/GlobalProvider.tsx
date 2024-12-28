@@ -7,6 +7,7 @@ import {
   SetStateAction,
 } from "react";
 import { getCurrentUser } from "@/lib/appwrite";
+import { Alert } from "react-native";
 
 interface GlobalContextProps {
   isLoading: boolean;
@@ -47,7 +48,7 @@ const GlobalProvider = ({ children }: React.PropsWithChildren) => {
           setUser(fetchedUser as User);
         }
       } catch (error) {
-        console.log(error);
+        Alert.alert("Error", error as string);
       } finally {
         setIsLoading(false);
       }
