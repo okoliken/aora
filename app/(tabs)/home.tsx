@@ -13,11 +13,14 @@ import SearchInput from "@/components/ui/SearchInput";
 import Trending from "@/components/Trending";
 import EmptyState from "@/components/EmptyState";
 import useFetchPost from "../../hooks/useFetchPost";
-import { getAllPosts } from "../../lib/appwrite";
+import { getAllPosts, getLatestPosts } from "../../lib/appwrite";
 import VideoCard from "@/components/ui/VideoCard";
 export default function Home() {
   const [refreshing, setRefreshing] = React.useState(false);
-  const { data, loading, refetch } = useFetchPost({ fetchPosts: getAllPosts });
+  const { data, refetch } = useFetchPost({ fetchPosts: getAllPosts });
+  const { data: trendingPosts } = useFetchPost({
+    fetchPosts: getLatestPosts,
+  });
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
@@ -58,11 +61,11 @@ export default function Home() {
             />
             <View className="flex-row items-center justify-between pt-[2.25rem]">
               <Text className="font-pregular text-gray-100 text-sm">
-                Trending Videos
+                Latest Videos
               </Text>
             </View>
 
-            <Trending posts={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]} />
+            <Trending posts={trendingPosts} />
           </View>
         )}
         ListEmptyComponent={() => (
