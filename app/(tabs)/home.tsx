@@ -59,7 +59,7 @@ export default function Home() {
               onChangeText={(text: string) => {}}
               placeholder="Search for a video topic"
             />
-            <View className="flex-row items-center justify-between pt-[2.25rem]">
+            <View className="flex-row items-center justify-between">
               <Text className="font-pregular text-gray-100 text-sm">
                 Latest Videos
               </Text>

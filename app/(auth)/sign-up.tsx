@@ -149,7 +149,6 @@ export default function SignUp() {
                   title="Password"
                   value={value}
                   placeholder="Enter your password"
-                  secureTextEntry
                   onBlur={onBlur}
                   onChangeText={onChange}
                   errorMessage={errors.password?.message}

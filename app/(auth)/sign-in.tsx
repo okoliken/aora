@@ -129,7 +129,6 @@ export default function SignIn() {
                   title="Password"
                   value={value}
                   placeholder="Enter your password"
-                  secureTextEntry
                   keyboardType="visible-password"
                   onBlur={onBlur}
                   onChangeText={onChange}

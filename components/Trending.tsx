@@ -5,14 +5,17 @@ import {
   TouchableOpacity,
   Image,
   ImageBackground,
+  View,
+  Button,
 } from "react-native";
-import React, { useState } from "react";
-import { useEvent } from 'expo';
+import React, { useEffect, useState } from "react";
+import { ResizeMode, Video } from "expo-av";
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as Animatable from "react-native-animatable";
 import { Post } from "@/lib/appwrite";
 
 import { icons } from "../constants";
+import { useEvent } from "expo";
 
 interface Props {
   posts: Post[];
@@ -24,7 +27,7 @@ Animatable.initializeRegistryWithDefinitions({
       transform: [{ scale: 0.9 }],
     },
     1: {
-      transform: [{ scale: 1.1 }],
+      transform: [{ scale: 1 }],
     },
   },
   zoomOut: {
@@ -37,6 +40,7 @@ Animatable.initializeRegistryWithDefinitions({
   },
 });
 
+
 const TrendingItem = ({
   activePost,
   item,
@@ -44,33 +48,55 @@ const TrendingItem = ({
   activePost: Post;
   item: Post;
 }) => {
-  console.log('activePost', activePost.Video);
   const [play, setPlay] = useState(false);
-  const player = useVideoPlayer(activePost.Video, player => {
-    player.loop = true;
-    player.play();
+  const player = useVideoPlayer(item.Video, player => {
+    player.loop = false;
+    player.pause()
   });
 
   const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
+
   return (
     <Animatable.View
-      className="mr-5"
+      className="mr-5 py-1"
       animation={activePost.$id === item.$id ? "zoomIn" : "zoomOut"}
     >
-      <VideoView
-          player={player}
-          className="w-52 h-72 rounded-[33px] mt-3 bg-white/10"
-          nativeControls
-          allowsPictureInPicture
-        />
-      {isPlaying ? (
-        <></>
+      {play ? (
+        <View>
+          <VideoView
+            style={{
+              width: 208,
+              height: 288,
+              borderRadius: 33,
+            }}
+            className="rounded-[33px] mt-3 bg-white/10"
+            player={player}
+            onPointerEnter={() => { 
+              setPlay(true);
+              if (isPlaying) {
+                player.pause();
+              } else {
+                player.play();
+              }
+            }}
+            contentFit="cover"
+            contentPosition={{ dx: 0.5, dy: 0.5 }}
+            nativeControls={false}
+          />
+          <Button
+            title="Stop Video"
+            onPress={() => {
+              player.pause();
+              setPlay(false);
+            }}
+          />
+        </View>
       ) : (
         <TouchableOpacity
           className="relative flex justify-center items-center"
           activeOpacity={0.7}
           onPress={() => {
-            console.log('isPlaying', isPlaying);
+            setPlay(true);
             if (isPlaying) {
               player.pause();
             } else {
@@ -82,7 +108,7 @@ const TrendingItem = ({
             source={{
               uri: item.Thumbnail,
             }}
-            className="w-52 h-72 rounded-[14px] my-5 overflow-hidden shadow-lg shadow-black/40"
+            className="w-52 h-72 rounded-[33px] my-5 overflow-hidden shadow-lg shadow-black/40"
             resizeMode="cover"
           />
 
@@ -102,6 +128,7 @@ export default function Trending({ posts }: Props) {
   return (
     <FlatList
       data={posts}
+      keyExtractor={(item) => item.$id}
       renderItem={({ item }) => (
         <TrendingItem activePost={activePost} item={item} />
       )}
